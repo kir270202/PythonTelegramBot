@@ -28,6 +28,8 @@ UrlResultAvito=""
 
 
 
+
+
 # Функция, обрабатывающая команду /start
 @bot.message_handler(commands=["start"])
 def start(message, res=False):
@@ -411,23 +413,23 @@ def func(message):
         UrlResultDrom = "https://auto.drom.ru/" + bodyStyle + price + transmission + fuelType + wheelDrive + color + steeringWheelType + horsepowerLowerBound+horsepowerUpperBound + milage
         request = requests.get(UrlResultDrom)
         bs = BeautifulSoup(request.text, "html.parser")
-        all_links = bs.find_all('a', {'class': 'css-eii4kh ewrty961'})[:5]
-        bot.send_message(message.chat.id, text="Вот, что я подобрал специально для тебя на drom.ru")
+        all_links = bs.find_all('a', {'class': 'css-1wltzny ewrty961'})[:8]
+        bot.send_message(message.chat.id, text="Результаты с портала drom.ru")
         for link in all_links:
             bot.send_message(message.chat.id, text=link["href"])
 
 
-        UrlResult_autoRu="https://auto.ru/moskva/cars/all/" + bodystyle_autoRu + transmission_autoRu + fuelType_autoRu + wheelDrive_autoRu + price_autoRu + horsepowerLowerBound_autoRu + horsepowerUpperBound_autoRu + steeringWheelType_autoRu + milage_autoRu + color_autoRu
-        request_autoRu = requests.get(UrlResult_autoRu)
-        bs_autoRu = BeautifulSoup(request_autoRu.text, "html.parser")
-        all_links_autoRu = bs_autoRu('a')
-        bot.send_message(message.chat.id, text="Вот, что я подобрал специально для тебя на auto.ru "+str(len(all_links_autoRu)))
-        bot.send_message(message.chat.id, text=UrlResult_autoRu)
-        for link in all_links_autoRu:
-            bot.send_message(message.chat.id, text=link["href"])
+        #UrlResult_autoRu="https://auto.ru/moskva/cars/all/" + bodystyle_autoRu + transmission_autoRu + fuelType_autoRu + wheelDrive_autoRu + price_autoRu + horsepowerLowerBound_autoRu + horsepowerUpperBound_autoRu + steeringWheelType_autoRu + milage_autoRu + color_autoRu
+        #request_autoRu = requests.get(UrlResult_autoRu)
+        #bs_autoRu = BeautifulSoup(request_autoRu.text, "html.parser")
+        #all_links_autoRu = bs_autoRu('a')
+        #bot.send_message(message.chat.id, text="Вот, что я подобрал специально для тебя на auto.ru "+str(len(all_links_autoRu)))
+        #bot.send_message(message.chat.id, text=UrlResult_autoRu)
+        #for link in all_links_autoRu:
+            #bot.send_message(message.chat.id, text=link["href"])
 
 
-        UrlResultAvito="https://www.avito.ru/rossiya/avtomobili"
+        #UrlResultAvito="https://www.avito.ru/rossiya/avtomobili"
 
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         button1 = types.KeyboardButton("Автоподбор")
