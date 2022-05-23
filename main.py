@@ -1,4 +1,6 @@
+import self as self
 import telebot
+from Car import Car
 from telebot import types
 from bs4 import BeautifulSoup
 import requests
@@ -7,35 +9,16 @@ bot = telebot.TeleBot('5177178571:AAF7OJmJMdnvpm4ic-KXRaxR4hRUwc380Vk')
 
 URL = "https://auto.drom.ru/"
 
-transmission=""
-bodyStyle=""
-wheelDrive=""
-price=""
-fuelType=""
-steeringWheelType=""
-color=""
-milage=""
-horsepowerLowerBound=""
-horsepowerUpperBound=""
-UrlResult=""
-
-
-transmissionAvito=""
-bodyStyleAvito=""
-wheelDriveAvito=""
-priceAvito=""
-UrlResultAvito=""
-
-
-
-
+car = Car()
 
 # Функция, обрабатывающая команду /start
 @bot.message_handler(commands=["start"])
 def start(message, res=False):
+
     markup = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
     selection = types.KeyboardButton("Автоподбор")
     description = types.KeyboardButton("Автоновости")
+
 
     markup.add(selection, description)
     bot.send_message(message.chat.id,
@@ -44,30 +27,6 @@ def start(message, res=False):
 
 @bot.message_handler(content_types=['text'])
 def func(message):
-    global transmission
-    global transmission_autoRu
-    global bodyStyle
-    global bodystyle_autoRu
-    global wheelDrive
-    global wheelDrive_autoRu
-    global price
-    global price_autoRu
-    global price
-    global fuelType
-    global fuelType_autoRu
-    global steeringWheelType
-    global steeringWheelType_autoRu
-    global color
-    global color_autoRu
-    global milage
-    global milage_autoRu
-    global horsepowerLowerBound
-    global horsepowerLowerBound_autoRu
-    global horsepowerUpperBound
-    global horsepowerUpperBound_autoRu
-    global UrlResult
-    global UrlResult_autoRu
-
 
     if (message.text == "Автоподбор"):
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -80,11 +39,10 @@ def func(message):
 
     elif (message.text == "Автомат" or message.text == "Механика"):
         if message.text == "Автомат":
-            transmission = "&transmission[]=2&transmission[]=3&transmission[]=4&transmission[]=5&transmission[]=-1"
-            transmission_autoRu = "&transmission=ROBOT&transmission=AUTOMATIC&transmission=VARIATOR&transmission=AUTO"
+            car.setTransmission("&transmission[]=2&transmission[]=3&transmission[]=4&transmission[]=5&transmission[]=-1")
         else:
-            transmission = "&transmission[]=1"
-            transmission_autoRu = "&transmission=MECHANICAL"
+            car.setTransmission("&transmission[]=1")
+
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         sedan = types.KeyboardButton("Седан")
         coupe = types.KeyboardButton("Купе")
@@ -99,27 +57,19 @@ def func(message):
 
     elif (message.text == "Седан" or message.text == "Купе" or message.text == "Универсал" or message.text == "Внедорожник" or message.text == "Минивен" or message.text == "Пикап" or message.text == "Кабриолет"):
         if message.text == "Седан":
-            bodyStyle = "sedan/all?"
-            bodyStyleAvito="sedan/"
-            bodystyle_autoRu = "body-sedan/?"
+            car.setBodyStyle("sedan/all?")
         elif message.text == "Купе":
-            bodyStyle = "coupe/all/?"
-            bodystyle_autoRu = "body-coupe/?"
+            car.setBodyStyle("coupe/all/?")
         elif message.text == "Универсал":
-            bodyStyle = "wagon/all/?"
-            bodystyle_autoRu = "body-wagon/?"
+            car.setBodyStyle("wagon/all/?")
         elif message.text == "Внедорожник":
-            bodyStyle = "suv/all/?"
-            bodystyle_autoRu = "body-allroad/?"
+            car.setBodyStyle("suv/all/?")
         elif message.text == "Минивен":
-            bodyStyle = "van/all/?"
-            bodystyle_autoRu = "body-minivan/?"
+            car.setBodyStyle("van/all/?")
         elif message.text == "Пикап":
-            bodyStyle = "pickup/all/?"
-            bodystyle_autoRu = "body-pickup/?"
+            car.setBodyStyle("pickup/all/?")
         elif message.text == "Кабриолет":
-            bodyStyle = "open/all/?"
-            bodystyle_autoRu = "body-cabrio/?"
+            car.setBodyStyle("open/all/?")
 
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         front = types.KeyboardButton("Передний")
@@ -132,14 +82,11 @@ def func(message):
 
     elif message.text == "Передний" or message.text == "Задний" or message.text == "Полный":
         if message.text == "Передний":
-            wheelDrive = "&privod=1"
-            wheelDrive_autoRu = "&gear_type=FORWARD_CONTROL"
+            car.setWheelDrive("&privod=1")
         elif message.text == "Задний":
-            wheelDrive = "&privod=2"
-            wheelDrive_autoRu = "&gear_type=REAR_DRIVE"
+            car.setWheelDrive("&privod=2")
         elif message.text == "Полный":
-            wheelDrive = "&privod=3"
-            wheelDrive_autoRu = "&gear_type=ALL_WHEEL_DRIVE"
+            car.setWheelDrive("&privod=3")
 
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         price100000 = types.KeyboardButton("100 000 руб")
@@ -160,36 +107,25 @@ def func(message):
 
     elif message.text == "100 000 руб" or message.text == "300 000 руб" or message.text == "500 000 руб" or message.text == "1 000 000 руб" or message.text == "1 500 000 руб" or message.text == "2 000 000 руб" or message.text == "3 000 000 руб" or message.text == "5 000 000 руб" or message.text == "10 000 000 руб" or message.text == "20 000 000 руб":
         if message.text == "100 000 руб":
-            price = "maxprice=100000"
-            price_autoRu = "&price_to=100000"
+            car.setPrice("maxprice=100000")
         elif message.text == "300 000 руб":
-            price = "maxprice=300000"
-            price_autoRu = "&price_to=300000"
+            car.setPrice("maxprice=300000")
         elif message.text == "500 000 руб":
-            price = "maxprice=500000"
-            price_autoRu = "&price_to=500000"
-            priceAvito="do-500000-rubley-ASgCAgECAUXGmgwWeyJmcm9tIjowLCJ0byI6NTAwMDAwfQ"
+            car.setPrice("maxprice=500000")
         elif message.text == "1 000 000 руб":
-            price = "maxprice=1000000"
-            price_autoRu = "&price_to=1000000"
+            car.setPrice("maxprice=1000000")
         elif message.text == "1 500 000 руб":
-            price = "maxprice=1500000"
-            price_autoRu = "&price_to=1500000"
+            car.setPrice("maxprice=1500000")
         elif message.text == "2 000 000 руб":
-            price = "maxprice=2000000"
-            price_autoRu = "&price_to=2000000"
+            car.setPrice("maxprice=2000000")
         elif message.text == "3 000 000 руб":
-            price = "maxprice=3000000"
-            price_autoRu = "&price_to=3000000"
+            car.setPrice("maxprice=3000000")
         elif message.text == "5 000 000 руб":
-            price = "maxprice=5000000"
-            price_autoRu = "&price_to=5000000"
+            car.setPrice("maxprice=5000000")
         elif message.text == "10 000 000 руб":
-            price = "maxprice=10000000"
-            price_autoRu = "&price_to=10000000"
+            car.setPrice("maxprice=10000000")
         elif message.text == "20 000 000 руб":
-            price = "maxprice=20000000"
-            price_autoRu = "&price_to=20000000"
+            car.setPrice("maxprice=20000000")
 
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         button1 = types.KeyboardButton("Бензин")
@@ -201,42 +137,18 @@ def func(message):
         markup.add(button1, button2, button3, button4, button5, button6)
         bot.send_message(message.chat.id, text="Выберите тип топлива", reply_markup=markup)
 
-        #UrlResult = URL + bodyStyle + transmission + wheelDrive + price
-        #markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        #button1 = types.KeyboardButton("Автоподбор")
-        #button2 = types.KeyboardButton("Описание авто")
-        #button3 = types.KeyboardButton("Подобрать авто!")
-        #markup.add(button1, button2, button3)
-        #bot.send_message(message.chat.id, text="Подбираем вам авто", reply_markup=markup)
-
-
-
-        #UrlResultAvito = "https://auto.ru/moskva/cars/opel/all/"
-        #requestAvito = requests.get(UrlResultAvito)
-        #bsAvito = BeautifulSoup(requestAvito.text, "html.parser")
-        #all_linksAvito = bsAvito.find_all('a')#, {'class': 'Link ListingItemTitle__link'})
-        #bot.send_message(message.chat.id, text="Вот, что я подобрал специально для тебя на авто ru")
-
-        #for link in all_linksAvito:
-            #bot.send_message(message.chat.id, text="Купил опель - молодец. Засунь в жопу огурец")
-            #bot.send_message(message.chat.id, text=link["href"])
 
     elif message.text=="Бензин" or message.text=="Дизель" or message.text=="Электро"or message.text=="Гибрид"or message.text=="ГБО":
         if message.text=="Бензин":
-            fuelType="&fueltype=1"
-            fuelType_autoRu = "&engine_group=GASOLINE"
+            car.setFuelType("&fueltype=1")
         elif message.text=="Дизель":
-            fuelType="&fueltype=2"
-            fuelType_autoRu = "&engine_group=DIESEL"
+            car.setFuelType("&fueltype=2")
         elif message.text=="Электро":
-            fuelType="&fueltype=3"
-            fuelType_autoRu = "&engine_group=ELECTRO"
+            car.setFuelType("&fueltype=3")
         elif message.text=="Гибрид":
-            fuelType="&fueltype=4"
-            fuelType_autoRu = "&engine_group=HYBRID"
+            car.setFuelType("&fueltype=4")
         elif message.text=="ГБО":
-            fuelType="&fueltype=5"
-            fuelType_autoRu = "&engine_group=LPG"
+            car.setFuelType("&fueltype=5")
 
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         button1 = types.KeyboardButton("Любое расположение")
@@ -249,14 +161,11 @@ def func(message):
 
     elif message.text=="Любое расположение" or message.text=="Левый" or message.text=="Правый":
         if message.text=="Любое расположение":
-            steeringWheelType=""
-            steeringWheelType_autoRu = ""
+            car.setSteeringWheelType("")
         elif message.text=="Левый":
-            steeringWheelType="&w=2"
-            steeringWheelType_autoRu = "&steering_wheel=LEFT"
+            car.setSteeringWheelType("&w=2")
         elif message.text=="Правый":
-            steeringWheelType="&w=1"
-            steeringWheelType_autoRu = "&steering_wheel=RIGHT"
+            car.setSteeringWheelType("&w=1")
 
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         button1 = types.KeyboardButton("Любой цвет")
@@ -277,35 +186,25 @@ def func(message):
     elif message.text=="Белый" or message.text=="Черный" or message.text=="Коричневый" or message.text=="Зеленый" or message.text=="Фиолетовый" or message.text=="Серый/Серебристый" or message.text=="Синий/Голубой" or message.text=="Бежевый/Желтый/Золотистый" or message.text=="Красный/Бордовый/Оранжевый/Розовый" or message.text=="Любой цвет":
 
         if message.text=="Любой цвет":
-            color=""
-            color_autoRu = ""
+            car.setColor("")
         elif message.text=="Белый":
-            color="&colorid[]=12"
-            color_autoRu = "&color=FAFBFB"
+            car.setColor("&colorid[]=12")
         elif message.text=="Черный":
-            color="&colorid[]=1"
-            color_autoRu = "&color=040001"
+            car.setColor("&colorid[]=1")
         elif message.text=="Коричневый":
-            color="&colorid[]=7"
-            color_autoRu = "&color=97948F"
+            car.setColor("&colorid[]=7")
         elif message.text=="Зеленый":
-            color="&colorid[]=9"
-            color_autoRu = "&color=007F00"
+            car.setColor("&colorid[]=9")
         elif message.text=="Фиолетовый":
-            color="&colorid[]=2"
-            color_autoRu = "&color=4A2197"
+            car.setColor("&colorid[]=2")
         elif message.text=="Серый/Серебристый":
-            color="&colorid[]=4&colorid[]=16"
-            color_autoRu = "&color=97948F&color=CACECB"
+            car.setColor("&colorid[]=4&colorid[]=16")
         elif message.text=="Синий/Голубой":
-            color="&colorid[]=3&colorid[]=14"
-            color_autoRu = "&color=0000CC&color=22A0F8"
+            car.setColor("&colorid[]=3&colorid[]=14")
         elif message.text=="Бежевый/Желтый/Золотистый":
-            color="&colorid[]=13&colorid[]=10&colorid[]=8"
-            color_autoRu = "&color=C49648&color=DEA522&color=FFD600"
+            car.setColor("&colorid[]=13&colorid[]=10&colorid[]=8")
         elif message.text=="Красный/Бордовый/Оранжевый/Розовый":
-            color="&colorid[]=6&colorid[]=11&colorid[]=5&colorid[]=15"
-            color_autoRu = "&color=EE1D19&color=660099&color=FF8649&color=FFC0CB"
+            car.setColor("&colorid[]=6&colorid[]=11&colorid[]=5&colorid[]=15")
 
 
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -322,35 +221,23 @@ def func(message):
 
     elif message.text=="До 70 лс" or message.text=="71-100 лс" or message.text=="101-150 лс" or message.text=="151-200 лс" or message.text=="201-249 лс" or message.text=="Более 250 лс":
         if message.text == "До 70 лс":
-            horsepowerLowerBound="&minpower=1"
-            horsepowerUpperBound = "&maxpower=70"
-            horsepowerLowerBound_autoRu = ""
-            horsepowerUpperBound_autoRu = "&power_to=70"
+            car.setHorsepowerLowerBound("&minpower=1")
+            car.setHorsepowerUpperBound("&maxpower=70")
         if message.text == "71-100 лс":
-            horsepowerLowerBound = "&minpower=71"
-            horsepowerUpperBound = "&maxpower=100"
-            horsepowerLowerBound_autoRu = "&power_from=71"
-            horsepowerUpperBound_autoRu = "&power_to=100"
+            car.setHorsepowerLowerBound("&minpower=71")
+            car.setHorsepowerUpperBound("&maxpower=100")
         if message.text == "101-150 лс":
-            horsepowerLowerBound = "&minpower=101"
-            horsepowerUpperBound = "&maxpower=150"
-            horsepowerLowerBound_autoRu = "&power_from=101"
-            horsepowerUpperBound_autoRu = "&power_to=150"
+            car.setHorsepowerLowerBound("&minpower=101")
+            car.setHorsepowerUpperBound("&maxpower=150")
         if message.text == "151-200 лс":
-            horsepowerLowerBound = "&minpower=151"
-            horsepowerUpperBound = "&maxpower=200"
-            horsepowerLowerBound_autoRu = "&power_from=151"
-            horsepowerUpperBound_autoRu = "&power_to=200"
+            car.setHorsepowerLowerBound("&minpower=151")
+            car.setHorsepowerUpperBound("&maxpower=200")
         if message.text == "201-249 лс":
-            horsepowerLowerBound = "&minpower=201"
-            horsepowerUpperBound = "&maxpower=249"
-            horsepowerLowerBound_autoRu = "&power_from=201"
-            horsepowerUpperBound_autoRu = "&power_to=249"
+            car.setHorsepowerLowerBound("&minpower=201")
+            car.setHorsepowerUpperBound("&maxpower=249")
         if message.text == "Более 250 лс":
-            horsepowerLowerBound = "&minpower=251"
-            horsepowerUpperBound = "&maxpower=10000"
-            horsepowerLowerBound_autoRu = "&power_from=250"
-            horsepowerUpperBound_autoRu = ""
+            car.setHorsepowerLowerBound("&minpower=251")
+            car.setHorsepowerUpperBound("&maxpower=10000")
 
 
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -368,68 +255,38 @@ def func(message):
         markup.add(button1, button2, button3, button4, button5, button6, button7, button8, button9, button10, button11)
         bot.send_message(message.chat.id, text="Укажите пробег", reply_markup=markup)
 
-        #UrlResultDrom = "https://auto.drom.ru/" + bodyStyle + price + transmission + wheelDrive
-        #request = requests.get(UrlResultDrom)
-        #bs = BeautifulSoup(request.text, "html.parser")
-        #all_links = bs.find_all('a', {'class': 'css-1ctbluq ewrty961'})
-        #bot.send_message(message.chat.id, text="Вот, что я подобрал специально для тебя")
-
-        #for link in all_links:
-            #bot.send_message(message.chat.id, text=link["href"])
-
 
     elif message.text=="Любой пробег" or message.text=="До 10 000 км" or message.text=="До 30 000 км" or message.text=="До 50 000 км" or message.text=="До 80 000 км" or message.text=="До 100 000 км" or message.text=="До 150 000 км" or message.text=="До 200 000 км" or message.text=="До 300 000 км":
         if message.text=="Любой пробег":
-            milage=""
+            car.setMilage("")
         if message.text=="До 10 000 км":
-            milage="&maxprobeg=10000"
-            milage_autoRu="km_age_to=10000"
+            car.setMilage("&maxprobeg=10000")
         if message.text == "До 30 000 км":
-            milage = "&maxprobeg=30000"
-            milage_autoRu = "km_age_to=30000"
+            car.setMilage("&maxprobeg=30000")
         if message.text == "До 50 000 км":
-            milage = "&maxprobeg=50000"
-            milage_autoRu = "km_age_to=50000"
+            car.setMilage("&maxprobeg=50000")
         if message.text == "До 80 000 км":
-            milage = "&maxprobeg=80000"
-            milage_autoRu = "km_age_to=80000"
+            car.setMilage("&maxprobeg=80000")
         if message.text == "До 100 000 км":
-            milage = "&maxprobeg=100000"
-            milage_autoRu = "km_age_to=100000"
+            car.setMilage("&maxprobeg=100000")
         if message.text == "До 150 000 км":
-            milage = "&maxprobeg=150000"
-            milage_autoRu = "km_age_to=150000"
+            car.setMilage("&maxprobeg=150000")
         if message.text == "До 200 000 км":
-            milage = "&maxprobeg=200000"
-            milage_autoRu = "km_age_to=200000"
+            car.setMilage("&maxprobeg=200000")
         if message.text == "До 300 000 км":
-            milage = "&maxprobeg=300000"
-            milage_autoRu = "km_age_to=300000"
+            car.setMilage("&maxprobeg=300000")
         if message.text == "Более 300 000 км":
-            milage = "&minprobeg=300000"
-            milage_autoRu = "km_age_from=300000"
+            car.setMilage("&minprobeg=300000")
 
 
-        UrlResultDrom = "https://auto.drom.ru/" + bodyStyle + price + transmission + fuelType + wheelDrive + color + steeringWheelType + horsepowerLowerBound+horsepowerUpperBound + milage
+        UrlResultDrom = "https://auto.drom.ru/" + car.getBodyStyle() + car.getPrice() + car.getTransmission() + car.getFuelType() + car.getWheelDrive() + car.getColor() + car.getSteeringWheelType() + car.getHorsepowerLowerBound()+car.getHorsepowerUpperBound() + car.getMilage()
+
         request = requests.get(UrlResultDrom)
         bs = BeautifulSoup(request.text, "html.parser")
-        all_links = bs.find_all('a', {'class': 'css-1wltzny ewrty961'})[:8]
+        all_links = bs.find_all('a', {'class': 'css-5l099z ewrty961'})[:8]
         bot.send_message(message.chat.id, text="Результаты с портала drom.ru")
         for link in all_links:
             bot.send_message(message.chat.id, text=link["href"])
-
-
-        #UrlResult_autoRu="https://auto.ru/moskva/cars/all/" + bodystyle_autoRu + transmission_autoRu + fuelType_autoRu + wheelDrive_autoRu + price_autoRu + horsepowerLowerBound_autoRu + horsepowerUpperBound_autoRu + steeringWheelType_autoRu + milage_autoRu + color_autoRu
-        #request_autoRu = requests.get(UrlResult_autoRu)
-        #bs_autoRu = BeautifulSoup(request_autoRu.text, "html.parser")
-        #all_links_autoRu = bs_autoRu('a')
-        #bot.send_message(message.chat.id, text="Вот, что я подобрал специально для тебя на auto.ru "+str(len(all_links_autoRu)))
-        #bot.send_message(message.chat.id, text=UrlResult_autoRu)
-        #for link in all_links_autoRu:
-            #bot.send_message(message.chat.id, text=link["href"])
-
-
-        #UrlResultAvito="https://www.avito.ru/rossiya/avtomobili"
 
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         button1 = types.KeyboardButton("Автоподбор")
